@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AllListsScreen from "./components/Screens/allListsScreen"; // Use your existing allListsScreen
+import AllListsScreen from "./components/Screens/allListsScreen"; 
+import ListScreen from "./components/Screens/listScreen"; 
 
 // Home Screen with a button in the center
 function HomeScreen({ navigation }) {
@@ -10,6 +11,9 @@ function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <Pressable style={styles.button} onPress={() => navigation.navigate("allListsScreen")}>
         <Text style={styles.buttonText}>Go to All Lists</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={() => navigation.navigate("ListScreen")}>
+        <Text style={styles.buttonText}>Go to List</Text>
       </Pressable>
     </View>
   );
@@ -24,6 +28,7 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="allListsScreen" component={AllListsScreen} options = {{animation: 'none', headerShown: false}}/>
+        <Stack.Screen name="ListScreen" component={ListScreen} options = {{animation: 'none', headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

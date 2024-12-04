@@ -5,12 +5,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBPBv83DyVUabG3cZueiUn5V09Olvlegao",
-  authDomain: "todoplease-136ed.firebaseapp.com",
-  projectId: "todoplease-136ed",
-  storageBucket: "todoplease-136ed.appspot.com",
-  messagingSenderId: "695433277657",
-  appId: "1:695433277657:web:6e1e0512579492586e8ec8" // Reemplaza con tu App ID
+  apiKey: "AIzaSyCb8cazagtFJeTeZHji6ofnBynCPj-OY84",
+  authDomain: "andinstagramvideos.firebaseapp.com",
+  projectId: "andinstagramvideos",
+  storageBucket: "andinstagramvideos.firebasestorage.app",
+  messagingSenderId: "983569613180",
+  appId: "1:983569613180:web:696b4b677cda06787d24f9",
+  measurementId: "G-1BZR64P4XG"
 };
 
 // Inicializar Firebase

@@ -22,7 +22,7 @@ export default function FSection({ currentSection, onPress }) {
 
         <View style={styles.buttonContainer}>
           <FButton 
-            selectedIcon="camera-plus" 
+            selectedIcon="plus-box-outline" 
             unselectedIcon="home-outline" 
             id={1} 
             onPress={onPress} 
