@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Linking } from "react-native";
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Linking, Image } from "react-native";
 import FSection from "../FSection";
-import { fetchListById } from "../../firebase/lists"; // Función para obtener la lista por ID
-import { fetchVideosByIds } from "../../firebase/videos"; // Función para obtener los videos por IDs
+import YoutubePlayer from "react-native-youtube-iframe"; // Para videos de YouTube
+import { fetchListById } from "../../firebase/lists"; 
+import { fetchVideosByIds } from "../../firebase/videos";
 
 export default function ListScreen({ route, navigation }) {
   const { listId } = route.params; // Obtiene el ID de la lista desde los parámetros de navegación
@@ -27,7 +28,6 @@ export default function ListScreen({ route, navigation }) {
   }, [listId]);
 
   const handlePress = (id) => {
-    console.log("Han clicat al botó " + id);
     if (id === 1) {
       navigation.navigate("allListsScreen");
     } else if (id === 2) {
@@ -40,19 +40,31 @@ export default function ListScreen({ route, navigation }) {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 9, justifyContent: "center", alignItems: "center", width: "100%" }}>
-        {/* Muestra los videos de la lista */}
         <FlatList
           data={videos}
           keyExtractor={(item) => item.id} // Usa el ID del video como clave
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
-              <View style={styles.videoItem}>
+            <View style={styles.videoCard}>
+              {/* Muestra la previsualización del video */}
+              {item.type === "youtube" ? (
+                <YoutubePlayer
+                  height={200}
+                  play={false}
+                  videoId={item.url.split("v=")[1]} // Obtiene el ID del video de YouTube
+                />
+              ) : (
+                <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
+                  <Image
+                    source={{ uri: item.thumbnail || "https://via.placeholder.com/300" }} // Placeholder si no hay thumbnail
+                    style={styles.thumbnail}
+                  />
+                </TouchableOpacity>
+              )}
+              <View style={styles.videoInfo}>
                 <Text style={styles.videoTitle}>{item.title}</Text>
-                <Text style={styles.videoPlatform}>
-                  {item.type === "youtube" ? "YouTube" : "Instagram"}
-                </Text>
+                <Text style={styles.videoDescription}>{item.description}</Text>
               </View>
-            </TouchableOpacity>
+            </View>
           )}
           ListEmptyComponent={<Text>No hay videos en esta lista.</Text>} // Muestra esto si no hay videos
         />
@@ -72,21 +84,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  videoItem: {
-    padding: 15,
-    marginVertical: 5,
-    backgroundColor: "#f9f9f9",
-    borderRadius: 5,
+  videoCard: {
+    width: "90%",
+    marginVertical: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    width: "90%",
+    padding: 10,
+  },
+  thumbnail: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+  },
+  videoInfo: {
+    marginTop: 10,
   },
   videoTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 5,
   },
-  videoPlatform: {
+  videoDescription: {
     fontSize: 14,
     color: "#555",
   },
