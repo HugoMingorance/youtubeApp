@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
-import { Picker } from '@react-native-picker/picker'; // Solo esta importación
-import FSection from "../FSection";
-import { fetchLists } from "../../firebase/lists"; // Asegúrate de que esta ruta sea correcta.
-import { addVideo } from '../../firebase/addVideo.js'; // Función para agregar un video
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
+import { Picker } from "@react-native-picker/picker"; // Asegúrate de tener esta librería instalada.
+import { fetchLists } from "../../firebase/lists"; // Para obtener las listas desde Firebase.
+import { addVideo } from "../../firebase/addVideo"; // Función para agregar un video.
+import FSection from "../FSection"; // Footer de la app.
 
 export default function NewVideoScreen({ navigation }) {
-  const [title, setTitle] = useState('');
-  const [type, setType] = useState('');
-  const [url, setUrl] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedLists, setSelectedLists] = useState([]); // Para almacenar las listas seleccionadas
-  const [allLists, setAllLists] = useState([]); // Para almacenar todas las listas disponibles
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState("");
+  const [url, setUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedList, setSelectedList] = useState(""); // Solo una lista seleccionada.
+  const [allLists, setAllLists] = useState([]); // Todas las listas disponibles.
 
-  // Fetch las listas disponibles desde Firebase
+  // Fetch de las listas disponibles desde Firebase
   useEffect(() => {
     const loadLists = async () => {
       try {
-        const lists = await fetchLists(); // Obtén todas las listas desde Firestore
-        setAllLists(lists); // Guarda las listas disponibles
+        const lists = await fetchLists();
+        setAllLists(lists);
       } catch (error) {
         console.error("Error fetching lists: ", error);
       }
@@ -29,8 +28,8 @@ export default function NewVideoScreen({ navigation }) {
 
   // Maneja la acción de agregar un nuevo video
   const handleAddVideo = async () => {
-    if (!title || !type || !url || selectedLists.length === 0) {
-      Alert.alert('Error', 'Por favor, ingresa todos los campos y selecciona al menos una lista.');
+    if (!title || !type || !url || !selectedList) {
+      Alert.alert("Error", "Por favor, completa todos los campos y selecciona una lista.");
       return;
     }
 
@@ -39,23 +38,23 @@ export default function NewVideoScreen({ navigation }) {
       type,
       url,
       description,
-      lists: selectedLists, // Guardar las listas seleccionadas
+      lists: [selectedList], // Solo una lista seleccionada.
     };
 
     try {
-      // Llamamos a la función para agregar el video a la base de datos
+      // Llamamos a la función para agregar el video y actualizar la lista
       await addVideo(videoData);
-      Alert.alert('Éxito', 'Video agregado correctamente.');
+      Alert.alert("Éxito", "Video agregado correctamente.");
 
-      // Limpiar los campos después de agregar el video
-      setTitle('');
-      setType('');
-      setUrl('');
-      setDescription('');
-      setSelectedLists([]);
+      // Limpiar los campos
+      setTitle("");
+      setType("");
+      setUrl("");
+      setDescription("");
+      setSelectedList("");
     } catch (error) {
-      console.error('Error adding video: ', error);
-      Alert.alert('Error', 'Hubo un problema al agregar el video.');
+      console.error("Error adding video: ", error);
+      Alert.alert("Error", "Hubo un problema al agregar el video.");
     }
   };
 
@@ -71,6 +70,7 @@ export default function NewVideoScreen({ navigation }) {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Contenido principal */}
       <View style={{ flex: 9, justifyContent: "center", alignItems: "center", width: "100%" }}>
         <View style={{ padding: 20, width: "90%" }}>
           <TextInput
@@ -98,14 +98,13 @@ export default function NewVideoScreen({ navigation }) {
             style={styles.input}
           />
 
-          {/* Desplegable para seleccionar listas */}
+          {/* Picker para seleccionar una lista */}
           <Picker
-            selectedValue={selectedLists}
-            onValueChange={(itemValue) => setSelectedLists(itemValue)}
+            selectedValue={selectedList}
+            onValueChange={(itemValue) => setSelectedList(itemValue)}
             style={styles.picker}
-            multiple
-            placeholder="Selecciona listas"
           >
+            <Picker.Item label="Selecciona una lista" value="" />
             {allLists.map((list) => (
               <Picker.Item key={list.id} label={list.name} value={list.id} />
             ))}
@@ -115,6 +114,7 @@ export default function NewVideoScreen({ navigation }) {
         </View>
       </View>
 
+      {/* Footer */}
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 0 }}>
         <FSection currentSection={5} onPress={handlePress} />
       </View>
