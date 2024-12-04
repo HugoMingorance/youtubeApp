@@ -3,6 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe"; // Para videos de YouTube
 import { Linking } from "react-native";
 
+// Función para extraer el videoId de la URL de YouTube
+const extractVideoId = (url) => {
+  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};
+
 export default function VideoCard({ item }) {
   const [isExpanded, setIsExpanded] = useState(false); // Estado para manejar la expansión del video
 
@@ -10,6 +17,9 @@ export default function VideoCard({ item }) {
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
   };
+
+  // Extrae el videoId usando la función
+  const videoId = extractVideoId(item.url);
 
   return (
     <View style={styles.videoCard}>
@@ -29,19 +39,14 @@ export default function VideoCard({ item }) {
       {/* Mostrar video o previsualización dependiendo del estado */}
       {isExpanded && (
         <View style={styles.videoPreview}>
-          {item.type === "youtube" ? (
+          {videoId ? (
             <YoutubePlayer
               height={200}
               play={false}
-              videoId={item.url.split("v=")[1]} // Obtiene el ID del video de YouTube
+              videoId={videoId} // Usa el videoId extraído
             />
           ) : (
-            <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
-              <Image
-                source={{ uri: item.thumbnail || "https://via.placeholder.com/300" }}
-                style={styles.thumbnail}
-              />
-            </TouchableOpacity>
+            <Text>Video no disponible</Text> // Si no se encuentra un videoId válido
           )}
         </View>
       )}
