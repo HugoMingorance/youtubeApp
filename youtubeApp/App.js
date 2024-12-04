@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AllListsScreen from "./components/Screens/allListsScreen"; 
 import ListScreen from "./components/Screens/listScreen"; 
+import NewVideoScreen from "./components/Screens/newVideoScreen"; 
 
 // Home Screen with a button in the center
 function HomeScreen({ navigation }) {
@@ -29,6 +30,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="allListsScreen" component={AllListsScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="ListScreen" component={ListScreen} options = {{animation: 'none', headerShown: false}}/>
+        <Stack.Screen name="NewVideoScreen" component={NewVideoScreen} options = {{animation: 'none', headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

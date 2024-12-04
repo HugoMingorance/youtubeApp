@@ -29,7 +29,7 @@ export default function AllListsScreen({ navigation }) {
   const handlePress = (id) => {
     console.log("Han clicat al botó " + id);
     if (id === 1) {
-      navigation.navigate("mapScreen");
+      navigation.navigate("NewVideoScreen");
     } else if (id === 2) {
       navigation.navigate("FavouritesScreen");
     } else if (id === 3) {
