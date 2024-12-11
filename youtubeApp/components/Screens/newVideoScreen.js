@@ -15,6 +15,7 @@ export default function NewVideoScreen({ navigation }) {
   const [selectedList, setSelectedList] = useState(""); // Solo una lista seleccionada.
   const [allLists, setAllLists] = useState([]); // Todas las listas disponibles.
   const [newListName, setNewListName] = useState(""); // Para el nombre de la nueva lista.
+  const [newListDescription, setNewListDescription] = useState("");
   const [isCreatingNewList, setIsCreatingNewList] = useState(false); // Para saber si estamos creando una nueva lista.
 
   // Fetch de las listas disponibles desde Firebase
@@ -48,7 +49,7 @@ export default function NewVideoScreen({ navigation }) {
       }
 
       // Crear la nueva lista
-      const newList = await addList(newListName); // Asegúrate de tener la función addList en tu firebase/lists.js
+      const newList = await addList(newListName, newListDescription); // Asegúrate de tener la función addList en tu firebase/lists.js
       newListId = newList.id; // Obtener el ID de la nueva lista
     }
 
@@ -73,6 +74,7 @@ export default function NewVideoScreen({ navigation }) {
       setDescription("");
       setSelectedList("");
       setNewListName("");
+      setNewListDescription("");
       setIsCreatingNewList(false);
     } catch (error) {
       console.error("Error adding video: ", error);
@@ -142,6 +144,14 @@ export default function NewVideoScreen({ navigation }) {
               placeholder="Nombre de la nueva lista"
               value={newListName}
               onChangeText={setNewListName}
+              style={styles.input}
+            />
+          )}
+          {isCreatingNewList && (
+            <TextInput
+              placeholder="Descripción de la nueva lista"
+              value={newListDescription}
+              onChangeText={setNewListDescription}
               style={styles.input}
             />
           )}

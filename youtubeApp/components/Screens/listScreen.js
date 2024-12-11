@@ -7,6 +7,7 @@ import VideoCard from "../VideoCard.js"; // Importamos el componente VideoCard
 import { fetchListById } from "../../firebase/lists";
 import { fetchVideosByIds } from "../../firebase/videos";
 import FSection from "../FSection";
+import Hsection from "../Hsection";
 
 export default function ListScreen({ route, navigation }) {
   const { listId } = route.params; // Obtiene el ID de la lista desde los parámetros de navegación
@@ -40,8 +41,11 @@ export default function ListScreen({ route, navigation }) {
   }, [listId]);
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 9, justifyContent: "center", alignItems: "center", width: "100%" }}>
+    <View style={{ flex: 1, backgroundColor: 'black'}}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 0 }}>
+        <Hsection /> 
+      </View>
+      <View style={{ flex: 8, justifyContent: "center", alignItems: "center", width: "100%" }}>
         <FlatList
           data={videos}
           keyExtractor={(item) => item.id} // Usa el ID del video como clave

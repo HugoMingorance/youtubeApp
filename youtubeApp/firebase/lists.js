@@ -22,10 +22,11 @@ export const fetchListById = async (listId) => {
 };
 
 // Agregar una nueva lista
-export const addList = async (name) => {
+export const addList = async (name, description) => {
   try {
     const newList = {
       name,
+      description,
       createdAt: new Date().toISOString(),
     };
     // Usar `addDoc` y `collection` del nuevo SDK
