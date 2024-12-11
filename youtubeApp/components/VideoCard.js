@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe"; // Para videos de YouTube
-import { Linking } from "react-native";
 
 // Función para extraer el videoId de la URL de YouTube
 const extractVideoId = (url) => {
@@ -29,27 +28,28 @@ export default function VideoCard({ item }) {
   return (
     <View style={styles.videoCard}>
       <View style={styles.videoInfo}>
-        {/* Título y descripción del video */}
-        <Text style={styles.videoTitle}>{item.title}</Text>
-        <Text style={styles.videoDescription}>{item.description}</Text>
-      </View>
+        {/* Contenedor con thumbnail y texto en fila */}
+        <View style={styles.thumbnailContainer}>
+          {/* Miniatura del video */}
+          {thumbnailUrl && (
+            <Image
+              source={{ uri: thumbnailUrl }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+          )}
 
-      {/* <View>
-      Miniatura del video 
-      {thumbnailUrl && (
-          <Image
-            source={{ uri: thumbnailUrl }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />
-        )}
-      </View>*/}
+          {/* Título y descripción */}
+          <View style={styles.textContainer}>
+            <Text style={styles.videoTitle}>{item.title}</Text>
+            <Text style={styles.videoDescription}>{item.description}</Text>
+          </View>
+        </View>
+      </View>
 
       {/* Botón desplegable */}
       <TouchableOpacity onPress={toggleExpansion} style={styles.expandButton}>
-        <Text style={styles.expandButtonText}>
-          {isExpanded ? "v" : ">"}
-        </Text>
+        <Text style={styles.expandButtonText}>{isExpanded ? "v" : ">"}</Text>
       </TouchableOpacity>
 
       {/* Mostrar video o previsualización dependiendo del estado */}
@@ -86,6 +86,19 @@ const styles = StyleSheet.create({
   videoInfo: {
     marginBottom: 10,
   },
+  thumbnailContainer: {
+    flexDirection: "row", // Coloca el thumbnail y el texto en una fila
+    alignItems: "center", // Alinea verticalmente el thumbnail y el texto
+  },
+  thumbnail: {
+    width: 100,
+    height: 70,
+    borderRadius: 10,
+    marginRight: 10, 
+  },
+  textContainer: {
+    flex: 1, // Permite que el texto ocupe el resto del espacio disponible
+  },
   videoTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -98,31 +111,21 @@ const styles = StyleSheet.create({
   fecha: {
     fontSize: 14,
     color: "#555",
-    textAlign: "right",
-  },
-  thumbnail: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
+    textAlign: "center",
   },
   expandButton: {
     marginTop: 10,
-    backgroundColor: "#007bff",
+    backgroundColor: "red",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 5,
     alignSelf: "flex-start",
   },
   expandButtonText: {
-    color: "#fff",
+    color: "white",
     fontWeight: "bold",
   },
   videoPreview: {
     marginTop: 10,
-  },
-  thumbnail: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
   },
 });
