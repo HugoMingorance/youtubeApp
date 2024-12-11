@@ -1,5 +1,3 @@
-// ListScreen.js
-
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View, FlatList, Text } from "react-native";

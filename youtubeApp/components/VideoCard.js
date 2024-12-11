@@ -68,7 +68,7 @@ export default function VideoCard({ item }) {
         <View style={styles.videoPreview}>
           <WebView
             source={{ uri: item.url }}
-            style={{ height: 300, width: '100%' }}
+            style={{ height: 570, width: '100%' }}
           />
         </View>
       )}
