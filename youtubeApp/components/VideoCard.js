@@ -10,17 +10,14 @@ const extractVideoId = (url) => {
 };
 
 export default function VideoCard({ item }) {
-  const [isExpanded, setIsExpanded] = useState(false); // Estado para manejar la expansión del video
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  // Función para alternar la visibilidad del video o la previsualización
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
   };
 
-  // Extrae el videoId usando la función
   const videoId = extractVideoId(item.url);
 
-  // URL de la miniatura del video de YouTube
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
     : null;
@@ -28,7 +25,7 @@ export default function VideoCard({ item }) {
   return (
     <View style={styles.videoCard}>
       <View style={styles.videoInfo}>
-        {/* Contenedor con thumbnail y texto en fila */}
+        {/* Contenedor con thumbnail, texto y el botón de expansión */}
         <View style={styles.thumbnailContainer}>
           {/* Miniatura del video */}
           {thumbnailUrl && (
@@ -44,25 +41,21 @@ export default function VideoCard({ item }) {
             <Text style={styles.videoTitle}>{item.title}</Text>
             <Text style={styles.videoDescription}>{item.description}</Text>
           </View>
+
+          {/* Botón de expansión, alineado a la derecha */}
+          <TouchableOpacity onPress={toggleExpansion} style={styles.expandButton}>
+            <Text style={styles.expandButtonText}>{isExpanded ? "v" : ">"}</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      {/* Botón desplegable */}
-      <TouchableOpacity onPress={toggleExpansion} style={styles.expandButton}>
-        <Text style={styles.expandButtonText}>{isExpanded ? "v" : ">"}</Text>
-      </TouchableOpacity>
 
       {/* Mostrar video o previsualización dependiendo del estado */}
       {isExpanded && (
         <View style={styles.videoPreview}>
           {videoId ? (
-            <YoutubePlayer
-              height={200}
-              play={false}
-              videoId={videoId} // Usa el videoId extraído
-            />
+            <YoutubePlayer height={200} play={false} videoId={videoId} />
           ) : (
-            <Text>Video no disponible</Text> // Si no se encuentra un videoId válido
+            <Text>Video no disponible</Text>
           )}
         </View>
       )}
@@ -87,17 +80,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   thumbnailContainer: {
-    flexDirection: "row", // Coloca el thumbnail y el texto en una fila
-    alignItems: "center", // Alinea verticalmente el thumbnail y el texto
+    flexDirection: "row", // Coloca el thumbnail, el texto y el botón en una fila
+    alignItems: "center", // Alinea verticalmente los elementos
+    justifyContent: "space-between", // Espaciado entre los elementos (thumb, texto y botón)
   },
   thumbnail: {
     width: 100,
     height: 70,
     borderRadius: 10,
-    marginRight: 10, 
+    marginRight: 10,
   },
   textContainer: {
-    flex: 1, // Permite que el texto ocupe el resto del espacio disponible
+    flex: 1, // Permite que el texto ocupe el espacio disponible
   },
   videoTitle: {
     fontSize: 18,
@@ -114,12 +108,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   expandButton: {
-    marginTop: 10,
     backgroundColor: "red",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 5,
-    alignSelf: "flex-start",
   },
   expandButtonText: {
     color: "white",
