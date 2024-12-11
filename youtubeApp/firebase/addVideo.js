@@ -1,5 +1,7 @@
 import { getDoc, doc, updateDoc, arrayUnion, addDoc, collection } from 'firebase/firestore';
 import { db } from './firebaseConfig';
+import firebase from "firebase/app";
+import 'firebase/firestore'; 
 
 export const addVideo = async (videoData) => {
   try {

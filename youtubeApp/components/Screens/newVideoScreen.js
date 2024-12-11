@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker"; // Asegúrate de tener esta librería instalada.
-import { fetchLists } from "../../firebase/lists"; // Para obtener las listas desde Firebase.
+import { fetchLists, addList } from "../../firebase/lists"; // Asegúrate de tener la función addList.
 import { addVideo } from "../../firebase/addVideo"; // Función para agregar un video.
 import FSection from "../FSection"; // Footer de la app.
+import firebase from "firebase/app";
+import 'firebase/firestore'; 
 
 export default function NewVideoScreen({ navigation }) {
   const [title, setTitle] = useState("");
@@ -12,6 +14,8 @@ export default function NewVideoScreen({ navigation }) {
   const [description, setDescription] = useState("");
   const [selectedList, setSelectedList] = useState(""); // Solo una lista seleccionada.
   const [allLists, setAllLists] = useState([]); // Todas las listas disponibles.
+  const [newListName, setNewListName] = useState(""); // Para el nombre de la nueva lista.
+  const [isCreatingNewList, setIsCreatingNewList] = useState(false); // Para saber si estamos creando una nueva lista.
 
   // Fetch de las listas disponibles desde Firebase
   useEffect(() => {
@@ -28,17 +32,32 @@ export default function NewVideoScreen({ navigation }) {
 
   // Maneja la acción de agregar un nuevo video
   const handleAddVideo = async () => {
-    if (!title || !type || !url || !selectedList) {
-      Alert.alert("Error", "Por favor, completa todos los campos y selecciona una lista.");
+    if (!title || !type || !url || (!selectedList && !isCreatingNewList)) {
+      Alert.alert("Error", "Por favor, completa todos los campos y selecciona o crea una lista.");
       return;
     }
 
-    const videoData = {
+    // Si estamos creando una nueva lista, primero la creamos
+    let videoData;
+    let newListId = selectedList;
+
+    if (isCreatingNewList) {
+      if (!newListName) {
+        Alert.alert("Error", "Por favor, ingresa un nombre para la nueva lista.");
+        return;
+      }
+
+      // Crear la nueva lista
+      const newList = await addList(newListName); // Asegúrate de tener la función addList en tu firebase/lists.js
+      newListId = newList.id; // Obtener el ID de la nueva lista
+    }
+
+    videoData = {
       title,
       type,
       url,
       description,
-      lists: [selectedList], // Solo una lista seleccionada.
+      lists: [newListId], // Usamos la lista seleccionada o la recién creada
     };
 
     try {
@@ -52,6 +71,8 @@ export default function NewVideoScreen({ navigation }) {
       setUrl("");
       setDescription("");
       setSelectedList("");
+      setNewListName("");
+      setIsCreatingNewList(false);
     } catch (error) {
       console.error("Error adding video: ", error);
       Alert.alert("Error", "Hubo un problema al agregar el video.");
@@ -98,17 +119,31 @@ export default function NewVideoScreen({ navigation }) {
             style={styles.input}
           />
 
-          {/* Picker para seleccionar una lista */}
+          {/* Picker para seleccionar una lista o crear una nueva */}
           <Picker
             selectedValue={selectedList}
-            onValueChange={(itemValue) => setSelectedList(itemValue)}
+            onValueChange={(itemValue) => {
+              setSelectedList(itemValue);
+              setIsCreatingNewList(itemValue === "new"); // Si selecciona "Crear nueva lista", muestra los campos para nueva lista
+            }}
             style={styles.picker}
           >
             <Picker.Item label="Selecciona una lista" value="" />
+            <Picker.Item label="Crear nueva lista" value="new" />
             {allLists.map((list) => (
               <Picker.Item key={list.id} label={list.name} value={list.id} />
             ))}
           </Picker>
+
+          {/* Inputs para crear nueva lista (solo visibles si está seleccionada la opción "Crear nueva lista") */}
+          {isCreatingNewList && (
+            <TextInput
+              placeholder="Nombre de la nueva lista"
+              value={newListName}
+              onChangeText={setNewListName}
+              style={styles.input}
+            />
+          )}
 
           <Button title="Agregar Video" onPress={handleAddVideo} />
         </View>
