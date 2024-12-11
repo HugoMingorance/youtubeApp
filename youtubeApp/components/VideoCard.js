@@ -21,6 +21,11 @@ export default function VideoCard({ item }) {
   // Extrae el videoId usando la función
   const videoId = extractVideoId(item.url);
 
+  // URL de la miniatura del video de YouTube
+  const thumbnailUrl = videoId
+    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+    : null;
+
   return (
     <View style={styles.videoCard}>
       <View style={styles.videoInfo}>
@@ -28,6 +33,17 @@ export default function VideoCard({ item }) {
         <Text style={styles.videoTitle}>{item.title}</Text>
         <Text style={styles.videoDescription}>{item.description}</Text>
       </View>
+
+      {/* <View>
+      Miniatura del video 
+      {thumbnailUrl && (
+          <Image
+            source={{ uri: thumbnailUrl }}
+            style={styles.thumbnail}
+            resizeMode="cover"
+          />
+        )}
+      </View>*/}
 
       {/* Botón desplegable */}
       <TouchableOpacity onPress={toggleExpansion} style={styles.expandButton}>
@@ -57,14 +73,15 @@ export default function VideoCard({ item }) {
 
 const styles = StyleSheet.create({
   videoCard: {
-    width: "90%",
-    marginVertical: 10,
+    width: "97%",
+    marginVertical: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    padding: 10,
+    padding: 15,
+    alignSelf: "center",
   },
   videoInfo: {
     marginBottom: 10,
@@ -82,6 +99,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
     textAlign: "right",
+  },
+  thumbnail: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
   },
   expandButton: {
     marginTop: 10,
