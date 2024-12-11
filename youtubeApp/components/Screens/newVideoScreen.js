@@ -58,6 +58,7 @@ export default function NewVideoScreen({ navigation }) {
       url,
       description,
       lists: [newListId], // Usamos la lista seleccionada o la recién creada
+      createdAt: new Date().toISOString().split("T")[0], // Solo la fecha en formato YYYY-MM-DD
     };
 
     try {

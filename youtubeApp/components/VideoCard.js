@@ -50,6 +50,7 @@ export default function VideoCard({ item }) {
           )}
         </View>
       )}
+      <Text style={styles.fecha}>{item.createdAt}</Text>
     </View>
   );
 }
@@ -76,6 +77,11 @@ const styles = StyleSheet.create({
   videoDescription: {
     fontSize: 14,
     color: "#555",
+  },
+  fecha: {
+    fontSize: 14,
+    color: "#555",
+    textAlign: "right",
   },
   expandButton: {
     marginTop: 10,
