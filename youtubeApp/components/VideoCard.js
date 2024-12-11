@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe"; // Para videos de YouTube
+import { WebView } from "react-native-webview"; // Importa WebView
 
 // Función para extraer el videoId de la URL de YouTube
 const extractVideoId = (url) => {
   const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
+};
+
+// Función para verificar si la URL es de Instagram
+const isInstagramUrl = (url) => {
+  return url.includes("instagram.com");
 };
 
 export default function VideoCard({ item }) {
@@ -17,6 +23,7 @@ export default function VideoCard({ item }) {
   };
 
   const videoId = extractVideoId(item.url);
+  const isInstagram = isInstagramUrl(item.url); // Verifica si es una URL de Instagram
 
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
@@ -28,7 +35,7 @@ export default function VideoCard({ item }) {
         {/* Contenedor con thumbnail, texto y el botón de expansión */}
         <View style={styles.thumbnailContainer}>
           {/* Miniatura del video */}
-          {thumbnailUrl && (
+          {thumbnailUrl && !isInstagram && (
             <Image
               source={{ uri: thumbnailUrl }}
               style={styles.thumbnail}
@@ -50,16 +57,23 @@ export default function VideoCard({ item }) {
       </View>
 
       {/* Mostrar video o previsualización dependiendo del estado */}
-      {isExpanded && (
+      {isExpanded && !isInstagram && videoId && (
         <View style={styles.videoPreview}>
-          {videoId ? (
-            <YoutubePlayer height={200} play={false} videoId={videoId} />
-          ) : (
-            <Text>Video no disponible</Text>
-          )}
+          <YoutubePlayer height={200} play={false} videoId={videoId} />
         </View>
       )}
-      <Text style={styles.fecha}>{item.createdAt}</Text>
+
+      {/* Mostrar vista previa de Instagram */}
+      {isExpanded && isInstagram && (
+        <View style={styles.videoPreview}>
+          <WebView
+            source={{ uri: item.url }}
+            style={{ height: 300, width: '100%' }}
+          />
+        </View>
+      )}
+
+      <Text style={styles.fecha}>{item.type} - {item.createdAt}</Text>
     </View>
   );
 }
