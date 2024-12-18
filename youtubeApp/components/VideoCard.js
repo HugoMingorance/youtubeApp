@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import YoutubePlayer from "react-native-youtube-iframe"; // Para videos de YouTube
-import { WebView } from "react-native-webview"; // Importa WebView
+import YoutubePlayer from "react-native-youtube-iframe";
+import { WebView } from "react-native-webview";
+import { removeVideo } from "../firebase/videos.js";  // Importa la función para eliminar video
 
 // Función para extraer el videoId de la URL de YouTube
 const extractVideoId = (url) => {
@@ -15,7 +16,7 @@ const isInstagramUrl = (url) => {
   return url.includes("instagram.com");
 };
 
-export default function VideoCard({ item }) {
+export default function VideoCard({ item, onUpdate }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpansion = () => {
@@ -28,6 +29,24 @@ export default function VideoCard({ item }) {
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
     : null;
+
+  // Función para eliminar el video
+  const handleDelete = async () => {
+    try {
+      console.log("Eliminando video...");
+      await removeVideo(item.id);  // Elimina el video usando el ID del video actual
+      onUpdate();  // Actualiza la lista de videos después de eliminar el video
+    } catch (error) {
+      console.error("Error eliminando video: ", error);
+    }
+  };
+
+  // Función para editar el video (puedes personalizar la edición como desees)
+  const handleEdit = () => {
+    console.log("Editando video...");
+    // Aquí puedes navegar a una pantalla de edición o permitir editar los detalles del video
+    // navigation.navigate("EditVideoScreen", { videoId: item.id });
+  };
 
   return (
     <View style={styles.videoCard}>
@@ -74,6 +93,23 @@ export default function VideoCard({ item }) {
       )}
 
       <Text style={styles.fecha}>{item.type} - {item.createdAt}</Text>
+
+      {/* Botones de editar y eliminar */}
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={handleEdit}
+        >
+          <Text style={styles.buttonText}>Editar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={handleDelete}
+        >
+          <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -94,9 +130,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   thumbnailContainer: {
-    flexDirection: "row", // Coloca el thumbnail, el texto y el botón en una fila
-    alignItems: "center", // Alinea verticalmente los elementos
-    justifyContent: "space-between", // Espaciado entre los elementos (thumb, texto y botón)
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   thumbnail: {
     width: 100,
@@ -105,7 +141,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   textContainer: {
-    flex: 1, // Permite que el texto ocupe el espacio disponible
+    flex: 1,
   },
   videoTitle: {
     fontSize: 18,
@@ -133,5 +169,26 @@ const styles = StyleSheet.create({
   },
   videoPreview: {
     marginTop: 10,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+  },
+  deleteButton: {
+    backgroundColor: "#FF4C4C",
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

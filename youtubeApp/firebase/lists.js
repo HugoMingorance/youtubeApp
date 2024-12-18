@@ -67,3 +67,44 @@ export const updateList = async (listId, data) => {
     throw error;
   }
 };
+
+// Función para eliminar los IDs de videos no existentes
+export const removeInvalidVideoIds = async (listId) => {
+  try {
+    // Obtener la lista por su ID
+    const listDoc = doc(db, "lists", listId);
+    const listSnap = await getDoc(listDoc);
+
+    if (!listSnap.exists()) {
+      console.log("La lista no existe.");
+      return;
+    }
+
+    const listData = listSnap.data();
+    const currentVideoIds = listData.videoIds || [];
+
+    // Obtener todos los documentos de videos
+    const videoSnapshot = await getDocs(collection(db, "videos"));
+    const validVideoIds = new Set();
+
+    // Llenar el conjunto con los IDs de los videos existentes
+    videoSnapshot.forEach((doc) => {
+      validVideoIds.add(doc.id); // Añadimos solo los IDs válidos
+    });
+
+    // Filtrar los videoIds que no están en la colección de videos
+    const updatedVideoIds = currentVideoIds.filter(id => validVideoIds.has(id));
+
+    // Si hay cambios, actualizar la lista
+    if (updatedVideoIds.length !== currentVideoIds.length) {
+      await updateDoc(listDoc, {
+        videoIds: updatedVideoIds,
+      });
+      console.log("Lista actualizada con los videoIds válidos.");
+    } else {
+      console.log("No hay cambios en los videoIds.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar los videoIds:", error);
+  }
+};

@@ -6,6 +6,8 @@ import { fetchListById } from "../../firebase/lists";
 import { fetchVideosByIds } from "../../firebase/videos";
 import FSection from "../FSection";
 import Hsection from "../Hsection";
+import { removeInvalidVideoIds } from "../../firebase/lists.js"; // Asegúrate de importar la función
+
 
 export default function ListScreen({ route, navigation }) {
   const { listId } = route.params; // Obtiene el ID de la lista desde los parámetros de navegación
@@ -25,6 +27,9 @@ export default function ListScreen({ route, navigation }) {
   useEffect(() => {
     const loadVideos = async () => {
       try {
+
+        await removeInvalidVideoIds(listId);
+
         const list = await fetchListById(listId); // Obtén los datos de la lista desde Firestore
         if (list) {
           const fetchedVideos = await fetchVideosByIds(list.videoIds); // Carga los videos por sus IDs
