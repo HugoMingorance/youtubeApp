@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, getDoc, addDoc } from "firebase/firestore"; // Usar funciones modernas
+import { collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc } from "firebase/firestore"; // Usar funciones modernas
 import { db } from "./firebaseConfig";
 
 // Obtener todas las listas
@@ -34,6 +34,36 @@ export const addList = async (name, description) => {
     return { id: listRef.id, ...newList }; // Retornamos el ID junto con los datos de la lista
   } catch (error) {
     console.error("Error creando lista:", error);
+    throw error;
+  }
+};
+
+// Eliminar una lista
+export const deleteList = async (listId) => {
+  try {
+    await deleteDoc(doc(db, "lists", listId));
+  } catch (error) {
+    console.error("Error eliminando lista:", error);
+    throw error;
+  }
+};
+
+// Actualizar una lista
+export const updateList = async (listId, data) => {
+  try {
+    // Verificar si el campo "titulo" necesita un valor por defecto
+    if (data.name === null || data.name === undefined || data.name.trim() === "") {
+      data.name = "Sin titulo";
+    }
+    // Verificar si el campo "description" necesita un valor por defecto
+    if (data.description === null || data.description === undefined || data.description.trim() === "") {
+      data.description = "Sin descripción";
+    }
+
+    const listRef = doc(db, "lists", listId);
+    await updateDoc(listRef, data);
+  } catch (error) {
+    console.error("Error actualizando lista:", error);
     throw error;
   }
 };
