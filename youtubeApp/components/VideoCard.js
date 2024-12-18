@@ -36,8 +36,11 @@ export default function VideoCard({ item, onUpdate }) {
     setIsExpanded(!isExpanded);
   };
 
-  const videoId = extractVideoId(item.url);
-  const isInstagram = isInstagramUrl(item.url); // Verifica si es una URL de Instagram
+  const youtubeUrl = item.url; // Guardamos la URL de YouTube
+  const videoId = extractVideoId(youtubeUrl); // Ahora `videoId` es el ID del video de YouTube extraído de la URL
+  const videoDocumentId = item.id; // Guardamos el ID del documento de Firestore
+
+  const isInstagram = isInstagramUrl(youtubeUrl); // Verifica si es una URL de Instagram
 
   const thumbnailUrl = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
@@ -47,27 +50,27 @@ export default function VideoCard({ item, onUpdate }) {
   const handleDelete = async () => {
     try {
       console.log("Eliminando video...");
-      await removeVideo(item.id);  // Elimina el video usando el ID del video actual
+      await removeVideo(videoDocumentId);  // Elimina el video usando el ID del video actual (documento de Firestore)
       onUpdate();  // Actualiza la lista de videos después de eliminar el video
     } catch (error) {
       console.error("Error eliminando video: ", error);
     }
   };
 
-   // Función para gestionar favoritos
-   const handleFavorite = async () => {
-    if (!videoId) {
-      console.error("videoId no está definido.");
+  // Función para gestionar favoritos
+  const handleFavorite = async () => {
+    if (!videoDocumentId) {
+      console.error("videoDocumentId no está definido.");
       return;
     }
 
     try {
       if (isFavorite) {
         // Si ya está en favoritos, lo eliminamos
-        await removeFromFavorites(videoId);
+        await removeFromFavorites(videoDocumentId); // Usamos el ID del documento de Firestore
       } else {
         // Si no está en favoritos, lo agregamos
-        await addToFavorites(videoId);
+        await addToFavorites(videoDocumentId); // Usamos el ID del documento de Firestore
       }
       setIsFavorite(!isFavorite); // Actualiza el estado de favorito
     } catch (error) {
@@ -120,7 +123,7 @@ export default function VideoCard({ item, onUpdate }) {
       {isExpanded && isInstagram && (
         <View style={styles.videoPreview}>
           <WebView
-            source={{ uri: item.url }}
+            source={{ uri: youtubeUrl }}
             style={{ height: 570, width: '100%' }}
           />
         </View>

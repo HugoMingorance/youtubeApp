@@ -4,6 +4,7 @@ import VideoCard from "../VideoCard.js";  // Componente para mostrar cada video
 import { fetchVideosByIds } from "../../firebase/videos";  // Función para obtener videos por sus IDs
 import { doc, getDoc } from "firebase/firestore";  // Firebase para obtener la colección de favoritos
 import { db } from "../../firebase/firebaseConfig";  // Configuración de Firebase
+import { getAuth } from "firebase/auth"; // Para obtener la autenticación del usuario
 import FSection from "../FSection";  // Footer (se asume que tienes un componente FSection)
 import Hsection from "../Hsection";  // Header (se asume que tienes un componente Hsection)
 
@@ -13,24 +14,32 @@ export default function FavoritsScreen({ navigation }) {
   useEffect(() => {
     const loadVideos = async () => {
       try {
-        // Obtener el documento de la colección "favorits" desde Firestore
-        const docRef = doc(db, "favorits", "oB42KteECpt93uy4h3CP"); // Cambia "oB42KteECpt93uy4h3CP" por el ID de usuario correcto
-        const docSnap = await getDoc(docRef);
+        // Obtener el usuario logueado
+        const auth = getAuth();
+        const user = auth.currentUser;
 
-        if (docSnap.exists()) {
-          // Obtener los videoIds de favoritos
-          const videoIds = docSnap.data().videoIds;
+        if (user) {
+          // Obtener el documento de la colección "favorits" del usuario logueado usando su ID
+          const docRef = doc(db, "favorits", user.uid); // Usamos el UID del usuario logueado
+          const docSnap = await getDoc(docRef);
 
-          if (videoIds && videoIds.length > 0) {
-            // Cargar los videos correspondientes por sus videoIds
-            const fetchedVideos = await fetchVideosByIds(videoIds);
-            setVideos(fetchedVideos); // Actualiza el estado con los videos obtenidos
+          if (docSnap.exists()) {
+            // Obtener los videoIds de favoritos
+            const videoIds = docSnap.data().videoIds;
+
+            if (videoIds && videoIds.length > 0) {
+              // Cargar los videos correspondientes por sus videoIds
+              const fetchedVideos = await fetchVideosByIds(videoIds);
+              setVideos(fetchedVideos); // Actualiza el estado con los videos obtenidos
+            } else {
+              console.log("No hay videos en favoritos.");
+              setVideos([]); // Si no hay videos, limpiamos el estado
+            }
           } else {
-            console.log("No hay videos en favoritos.");
-            setVideos([]); // Si no hay videos, limpiamos el estado
+            console.log("No se encontró el documento de favoritos.");
           }
         } else {
-          console.log("No se encontró el documento de favoritos.");
+          console.log("No hay usuario logueado.");
         }
       } catch (error) {
         console.error("Error fetching videos: ", error);
