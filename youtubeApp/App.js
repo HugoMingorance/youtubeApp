@@ -6,6 +6,8 @@ import AllListsScreen from "./components/Screens/allListsScreen";
 import ListScreen from "./components/Screens/listScreen"; 
 import NewVideoScreen from "./components/Screens/newVideoScreen"; 
 import FavoritsScreen from "./components/Screens/favoritsScreen"; 
+import LoginScreen from "./components/Screens/loginScreen"; 
+import RegisterScreen from "./components/Screens/RegisterScreen"; 
 
 // Home Screen with a button in the center
 function HomeScreen({ navigation }) {
@@ -27,12 +29,14 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="allListsScreen" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={HomeScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="allListsScreen" component={AllListsScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="ListScreen" component={ListScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="NewVideoScreen" component={NewVideoScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="FavoritsScreen" component={FavoritsScreen} options = {{animation: 'none', headerShown: false}}/>
+        <Stack.Screen name="LoginScreen" component={LoginScreen} options = {{animation: 'none', headerShown: false}}/>
+        <Stack.Screen name="RegisterScreen" component={RegisterScreen} options = {{animation: 'none', headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

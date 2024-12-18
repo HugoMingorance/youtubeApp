@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebase/firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore'; // Importa setDoc desde Firestore
+import { auth, db } from '../../firebase/firebaseConfig'; // Asegúrate de tener db importado
 
-export default function LoginScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigation.replace('allListsScreen');  
+      // Crear usuario con email y password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Crear documento en la colección 'favorits' con el uid del usuario
+      await setDoc(doc(db, "favorits", user.uid), {
+        videoIds: [] // Inicializar el campo videoIds como un array vacío
+      });
+
+      // Navegar a la pantalla de favoritos después de registrar al usuario
+      navigation.replace('FavoritsScreen');
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -33,9 +43,9 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
       />
       {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-      <Button title="Iniciar sesión" onPress={handleLogin} />
-      <Text style={styles.registerText} onPress={() => navigation.navigate('RegisterScreen')}>
-        ¿No tienes una cuenta? Regístrate
+      <Button title="Registrarse" onPress={handleRegister} />
+      <Text style={styles.loginText} onPress={() => navigation.navigate('LoginScreen')}>
+        ¿Ya tienes una cuenta? Inicia sesión
       </Text>
     </View>
   );
@@ -58,7 +68,7 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 12,
   },
-  registerText: {
+  loginText: {
     color: 'blue',
     marginTop: 16,
     textAlign: 'center',
