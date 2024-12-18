@@ -9,17 +9,18 @@ import ListCard from "../ListCard"; // Importa el nuevo componente ListCard
 export default function AllListsScreen({ navigation }) {
   const [lists, setLists] = useState([]); // Estado para almacenar las listas
 
-  // Cargar las listas desde Firestore
-  useEffect(() => {
-    const loadLists = async () => {
-      try {
-        const fetchedLists = await fetchLists(); // Llama a la función fetchLists desde lists.js
-        setLists(fetchedLists); // Actualiza el estado con las listas obtenidas
-      } catch (error) {
-        console.error("Error fetching lists: ", error);
-      }
-    };
+  /// Define loadLists fuera del useEffect para que esté disponible en toda la función
+  const loadLists = async () => {
+    try {
+      const fetchedLists = await fetchLists(); // Llama a la función fetchLists desde lists.js
+      setLists(fetchedLists); // Actualiza el estado con las listas obtenidas
+    } catch (error) {
+      console.error("Error fetching lists: ", error);
+    }
+  };
 
+  // Llama a loadLists al montar el componente
+  useEffect(() => {
     loadLists();
   }, []);
 
@@ -50,7 +51,11 @@ export default function AllListsScreen({ navigation }) {
           data={lists}
           keyExtractor={(item) => item.id} // Usa el ID de cada lista como clave
           renderItem={({ item }) => (
-            <ListCard list={item} onPress={handleListPress} /> // Usamos el componente ListCard
+            <ListCard
+            list={item}
+            onPress={handleListPress}
+            onUpdate={loadLists} // Pasa la función de actualización al componente hijo
+          />
           )}
           ListEmptyComponent={<Text>No hay listas disponibles.</Text>} // Muestra esto si no hay listas
         />
