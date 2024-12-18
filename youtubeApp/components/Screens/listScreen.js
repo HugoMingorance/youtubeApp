@@ -17,7 +17,7 @@ export default function ListScreen({ route, navigation }) {
     if (id === 1) {
       navigation.navigate("allListsScreen");
     } else if (id === 2) {
-      navigation.navigate("FavouritesScreen");
+      navigation.navigate("FavoritsScreen");
     } else if (id === 3) {
       navigation.navigate("userScreen");
     }

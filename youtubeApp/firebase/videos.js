@@ -1,3 +1,4 @@
+// videos.js
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 
@@ -6,10 +7,20 @@ export const fetchVideosByIds = async (videoIds) => {
   const videoPromises = videoIds.map(async (videoId) => {
     const videoDoc = doc(db, "videos", videoId);
     const videoSnap = await getDoc(videoDoc);
-    return { id: videoSnap.id, ...videoSnap.data() };
+
+    // Verificar si el documento existe
+    if (videoSnap.exists()) {
+      return { id: videoSnap.id, ...videoSnap.data() };  // Si existe, devolvemos los datos del video
+    } else {
+      console.warn(`Video con ID ${videoId} no encontrado.`);
+      return null;  // Si no existe, devolver null para poder manejarlo más tarde
+    }
   });
 
-  return Promise.all(videoPromises);
+  const videos = await Promise.all(videoPromises);
+
+  // Filtrar los nulos (si algún video no se encontró)
+  return videos.filter((video) => video !== null);
 };
 
 // Elimina un video específico de Firestore
@@ -22,5 +33,3 @@ export const removeVideo = async (videoId) => {
     console.error("Error eliminando video: ", error);
   }
 };
-
-

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { WebView } from "react-native-webview";
-import { removeVideo } from "../firebase/videos.js";  // Importa la función para eliminar video
+import { removeVideo } from "../firebase/videos.js"; // Importa la función para eliminar video
+import { addToFavorites, removeFromFavorites } from "../firebase/favorites.js"; // Funciones para agregar/quitar de favoritos
 
 // Función para extraer el videoId de la URL de YouTube
 const extractVideoId = (url) => {
@@ -18,6 +19,18 @@ const isInstagramUrl = (url) => {
 
 export default function VideoCard({ item, onUpdate }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false); // Estado para controlar si el video es favorito
+
+  useEffect(() => {
+    // Aquí puedes agregar la lógica para comprobar si el video ya está en favoritos
+    const checkFavoriteStatus = async () => {
+      // Comprobar en Firestore si el video está marcado como favorito
+      const favoriteStatus = await checkIfFavorite(item.id); // Crear esta función
+      setIsFavorite(favoriteStatus);
+    };
+
+    checkFavoriteStatus();
+  }, [item.id]);
 
   const toggleExpansion = () => {
     setIsExpanded(!isExpanded);
@@ -38,6 +51,27 @@ export default function VideoCard({ item, onUpdate }) {
       onUpdate();  // Actualiza la lista de videos después de eliminar el video
     } catch (error) {
       console.error("Error eliminando video: ", error);
+    }
+  };
+
+   // Función para gestionar favoritos
+   const handleFavorite = async () => {
+    if (!videoId) {
+      console.error("videoId no está definido.");
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        // Si ya está en favoritos, lo eliminamos
+        await removeFromFavorites(videoId);
+      } else {
+        // Si no está en favoritos, lo agregamos
+        await addToFavorites(videoId);
+      }
+      setIsFavorite(!isFavorite); // Actualiza el estado de favorito
+    } catch (error) {
+      console.error("Error al gestionar los favoritos: ", error);
     }
   };
 
@@ -94,7 +128,7 @@ export default function VideoCard({ item, onUpdate }) {
 
       <Text style={styles.fecha}>{item.type} - {item.createdAt}</Text>
 
-      {/* Botones de editar y eliminar */}
+      {/* Botones de editar, eliminar y agregar a favoritos */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={styles.editButton}
@@ -108,6 +142,14 @@ export default function VideoCard({ item, onUpdate }) {
           onPress={handleDelete}
         >
           <Text style={styles.buttonText}>Eliminar</Text>
+        </TouchableOpacity>
+
+        {/* Botón para añadir a favoritos */}
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={handleFavorite}
+        >
+          <Text style={styles.favoriteButtonText}>{isFavorite ? "❤️" : "🤍"}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -184,6 +226,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF4C4C",
     padding: 10,
     borderRadius: 5,
+  },
+  favoriteButton: {
+    backgroundColor: "#FFD700", // Color de fondo para el botón de favorito
+    padding: 10,
+    borderRadius: 5,
+  },
+  favoriteButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonText: {
     color: "#fff",
