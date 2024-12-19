@@ -91,7 +91,7 @@ useEffect(() => {
     } else if (id === 2) {
       navigation.navigate("FavouritesScreen");
     } else if (id === 3) {
-      navigation.navigate("userScreen");
+      navigation.navigate("UserScreen");
     }
   };
 

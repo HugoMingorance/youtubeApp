@@ -8,6 +8,7 @@ import NewVideoScreen from "./components/Screens/newVideoScreen";
 import FavoritsScreen from "./components/Screens/favoritsScreen"; 
 import LoginScreen from "./components/Screens/loginScreen"; 
 import RegisterScreen from "./components/Screens/RegisterScreen"; 
+import UserScreen from "./components/Screens/userScreen"; 
 
 // Home Screen with a button in the center
 function HomeScreen({ navigation }) {
@@ -37,6 +38,7 @@ export default function App() {
         <Stack.Screen name="FavoritsScreen" component={FavoritsScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="LoginScreen" component={LoginScreen} options = {{animation: 'none', headerShown: false}}/>
         <Stack.Screen name="RegisterScreen" component={RegisterScreen} options = {{animation: 'none', headerShown: false}}/>
+        <Stack.Screen name="UserScreen" component={UserScreen} options = {{animation: 'none', headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

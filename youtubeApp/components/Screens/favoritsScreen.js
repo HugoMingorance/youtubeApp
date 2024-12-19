@@ -55,7 +55,7 @@ export default function FavoritsScreen({ navigation }) {
     } else if (id === 2) {
       navigation.navigate("FavoritsScreen");
     } else if (id === 3) {
-      navigation.navigate("userScreen");
+      navigation.navigate("UserScreen");
     }
   };
 
