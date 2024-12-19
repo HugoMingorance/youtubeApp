@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker"; // Asegúrate de tener esta librería instalada.
-import { fetchLists, addList } from "../../firebase/lists"; // Asegúrate de tener la función addList.
+import { fetchLists, addList, addToUser } from "../../firebase/lists"; // Asegúrate de tener la función addList.
 import { addVideo } from "../../firebase/addVideo"; // Función para agregar un video.
 import FSection from "../FSection"; // Footer de la app.
 import firebase from "firebase/app";
@@ -65,6 +65,7 @@ export default function NewVideoScreen({ navigation }) {
     try {
       // Llamamos a la función para agregar el video y actualizar la lista
       await addVideo(videoData);
+      await addToUser(newListId)
       Alert.alert("Éxito", "Video agregado correctamente.");
 
       // Limpiar los campos

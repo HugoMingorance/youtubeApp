@@ -1,5 +1,14 @@
-import { collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc } from "firebase/firestore"; // Usar funciones modernas
+import { collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { db } from "./firebaseConfig";
+import { getAuth } from "firebase/auth";
+import { arrayUnion } from "firebase/firestore";
+
+// Obtener el usuario logueado
+const getUserId = () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  return user ? user.uid : null;  // Retorna el uid del usuario logueado o null si no hay usuario logueado
+};
 
 // Obtener todas las listas
 export const fetchLists = async () => {
@@ -35,6 +44,29 @@ export const addList = async (name, description) => {
   } catch (error) {
     console.error("Error creando lista:", error);
     throw error;
+  }
+};
+
+export const addToUser = async (listId) => {
+  const userId = getUserId();
+  console.log("User ID:", userId);
+  if (!userId) {
+    console.error("No hay usuario logueado");
+    return;
+  }
+
+  const userRef = doc(db, "llistesPerUusuari", userId);
+  console.log("Documento del usuario:", userRef.path);
+
+  try {
+    await setDoc(
+      userRef,
+      { llistesIds: arrayUnion(listId) },
+      { merge: true }
+    );
+    console.log("Lista agregada exitosamente al usuario");
+  } catch (error) {
+    console.error("Error al agregar lista al usuario:", error.message, error.stack);
   }
 };
 
