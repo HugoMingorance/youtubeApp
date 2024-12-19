@@ -20,6 +20,11 @@ export default function RegisterScreen({ navigation }) {
         videoIds: [] // Inicializar el campo videoIds como un array vacío
       });
 
+      // Crear documento en la colección 'favorits' con el uid del usuario
+      await setDoc(doc(db, "llistesPerUusuari", user.uid), {
+        llistesIds: [] // Inicializar el campo videoIds como un array vacío
+      });
+
       // Navegar a la pantalla de favoritos después de registrar al usuario
       navigation.replace('FavoritsScreen');
     } catch (error) {
