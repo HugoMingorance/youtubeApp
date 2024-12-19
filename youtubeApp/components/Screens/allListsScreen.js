@@ -3,7 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import FSection from "../FSection";
 import Hsection from "../Hsection.js";
-import { fetchLists } from "../../firebase/lists.js"; // Asegúrate de que esta ruta sea correcta.
+import { fetchUserLists } from "../../firebase/lists.js"; // Asegúrate de que esta ruta sea correcta.
 import ListCard from "../ListCard"; // Importa el nuevo componente ListCard
 
 export default function AllListsScreen({ navigation }) {
@@ -19,9 +19,16 @@ export default function AllListsScreen({ navigation }) {
     }
   };
 
-  // Llama a loadLists al montar el componente
   useEffect(() => {
-    loadLists();
+    const loadUserLists = async () => {
+      try {
+        const lists = await fetchUserLists();  // Solo las listas del usuario
+        setLists(lists);
+      } catch (error) {
+        console.error("Error fetching user lists: ", error);
+      }
+    };
+    loadUserLists();
   }, []);
 
   // Maneja la navegación al hacer clic en una lista

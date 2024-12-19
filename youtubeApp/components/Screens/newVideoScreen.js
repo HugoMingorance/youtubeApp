@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker"; // Asegúrate de tener esta librería instalada.
-import { fetchLists, addList, addToUser } from "../../firebase/lists"; // Asegúrate de tener la función addList.
+import { fetchUserLists, addList, addToUser } from "../../firebase/lists"; // Asegúrate de tener la función addList.
 import { addVideo } from "../../firebase/addVideo"; // Función para agregar un video.
 import FSection from "../FSection"; // Footer de la app.
 import firebase from "firebase/app";
@@ -18,18 +18,20 @@ export default function NewVideoScreen({ navigation }) {
   const [newListDescription, setNewListDescription] = useState("");
   const [isCreatingNewList, setIsCreatingNewList] = useState(false); // Para saber si estamos creando una nueva lista.
 
-  // Fetch de las listas disponibles desde Firebase
-  useEffect(() => {
-    const loadLists = async () => {
-      try {
-        const lists = await fetchLists();
-        setAllLists(lists);
-      } catch (error) {
-        console.error("Error fetching lists: ", error);
-      }
-    };
-    loadLists();
-  }, []);
+  // Dentro del componente NewVideoScreen
+useEffect(() => {
+  const loadUserLists = async () => {
+    try {
+      const userLists = await fetchUserLists();  // Usamos la nueva función
+      setAllLists(userLists);
+    } catch (error) {
+      console.error("Error fetching user lists: ", error);
+    }
+  };
+
+  loadUserLists();
+}, []);  // Solo al cargar la pantalla
+
 
   // Maneja la acción de agregar un nuevo video
   const handleAddVideo = async () => {

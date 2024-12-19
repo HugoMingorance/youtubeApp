@@ -19,6 +19,40 @@ export const fetchLists = async () => {
   }));
 };
 
+// Obtener las listas asociadas al usuario
+export const fetchUserLists = async () => {
+  const userId = getUserId();
+  if (!userId) {
+    console.error("No hay usuario logueado.");
+    return [];
+  }
+
+  const userRef = doc(db, "llistesPerUusuari", userId);
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    const userData = userSnap.data();
+    const listIds = userData.llistesIds || [];
+    const lists = await Promise.all(
+      listIds.map(async (listId) => {
+        const listRef = doc(db, "lists", listId);
+        const listSnap = await getDoc(listRef);
+
+        if (listSnap.exists()) {
+          return { id: listSnap.id, ...listSnap.data() };
+        } else {
+          console.warn(`Lista con ID ${listId} no encontrada.`);
+          return null;
+        }
+      })
+    );
+    return lists.filter(list => list !== null);
+  } else {
+    console.log("El usuario no tiene listas asociadas.");
+    return [];
+  }
+};
+
 // Obtener una lista por ID
 export const fetchListById = async (listId) => {
   const listDoc = doc(db, "lists", listId);
