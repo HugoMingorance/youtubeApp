@@ -26,7 +26,7 @@ export default function RegisterScreen({ navigation }) {
       });
 
       // Navegar a la pantalla de favoritos después de registrar al usuario
-      navigation.replace('FavoritsScreen');
+      navigation.replace('allListsScreen');
     } catch (error) {
       setErrorMessage(error.message);
     }
